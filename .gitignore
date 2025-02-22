@@ -1,0 +1,9 @@
+# Ignoring all images
+*.png
+*.jpg
+
+# Ignoring all files in a dataset
+/dataset/*
+
+# Ignoring all log files 
+*.log
