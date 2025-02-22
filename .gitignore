@@ -4,6 +4,7 @@
 
 # Ignoring all files in a dataset
 /dataset/*
+/venv/*
 
 # Ignoring all log files 
 *.log
