@@ -1,5 +1,6 @@
 import os 
 import numpy as np
+import pandas as pd
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -48,6 +49,22 @@ train_dir = os.path.join('dataset', 'train')
 class_names = sorted(os.listdir(train_dir))
 breed_mapping = {i: (breed[10:].replace("_", " ") if breed[10].isupper() else breed[10:].replace("_", " ").capitalize()) for i, breed in enumerate(class_names)}
 
+print(len(breed_mapping))
+
+# Reading excel file
+# df = pd.read_excel("Dog Breed Intelligence ranking.xlsx", sheet_name="Sheet2")
+
+# # Creating a dictionary of breed intelligence
+# breed_intelligence = dict(zip(df["Breed"], df["Rank"]))
+
+# Combine the Dog intelligence level with the breed mapping by assigning
+# the intelligence level to the breed name using terms like brighest dogs for 
+# dogs ranked 1-10, excellent dog for dogs ranked 11-26, and so on
+
+# breed_mapping = {i: f"{breed} ({breed_intelligence.get(breed, 'Unknown')})" for i, breed in breed_mapping.items()}
+
+
+
 def preprocess_image(image, target_size=(224, 224)):
     # Load the image
     if image.mode != "RGB":
@@ -76,6 +93,7 @@ def index():
             image_array = preprocess_image(image, target_size=(224, 224))
             preds = model.predict(image_array)
             breed_index = np.argmax(preds[0])
+            confidence = str(int(preds[0][breed_index] * 100)) + "%"
             predicted_breed = breed_mapping.get(breed_index, "Unknown")
 
             # Save the uploaded image
@@ -86,7 +104,7 @@ def index():
 
 
             image_url = url_for('static', filename='uploads/' + file.filename)
-            return render_template('result.html', breed=predicted_breed, image=image_url)
+            return render_template('result.html', breed=predicted_breed, confidence=confidence, image=image_url)
     return render_template('index.html')
 
 if __name__ == '__main__':
