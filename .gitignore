@@ -1,5 +1,4 @@
 # Ignoring all images
-*.png
 *.jpg
 
 # Ignoring all files in a dataset
