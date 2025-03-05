@@ -51,7 +51,7 @@ model = load_model('model/dog_breed_classifier.h5')
 # mapping of class index to breed name
 train_dir = os.path.join('dataset', 'train')
 class_names = sorted(os.listdir(train_dir))
-breed_mapping = {i: (breed[10:].replace("_", " ") if breed[10].isupper() else breed[10:].replace("_", " ").capitalize()) for i, breed in enumerate(class_names)}
+breed_mapping = {i: (breed[10:].replace("_", " ").title() if breed[10].isupper() else breed[10:].replace("_", " ").title()) for i, breed in enumerate(class_names)}
 
 # Reading excel file
 df = pd.read_excel("Dog Breed Intelligence ranking.xlsx", sheet_name="Sheet2")
@@ -68,12 +68,13 @@ breed_mapping_ranking = {i: f"{breed_intelligence.get(breed, 'Unknown')}" for i,
 # Get the description of the breed
 def get_breed_description(breed):
     formatted_breed = breed.replace(" ", "_")
-    url = f"https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&format=json&titles={formatted_breed}"
+    if formatted_breed == "Saint_Bernard":
+        formatted_breed = "St._Bernard_(dog_breed)"
+    url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{formatted_breed}"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        page = next(iter(data["query"]["pages"].values()))
-        return page["extract"]
+        return data.get("extract", "Description not found")
     else:
         return "Description not found"
 
@@ -111,6 +112,7 @@ def index():
             predicted_breed_ranking = breed_mapping_ranking.get(breed_index, "Unknown")
             breed_description = get_breed_description(predicted_breed)
 
+
             # Save the uploaded image
             new_upload = Upload(filename=file.filename, breed=predicted_breed)
             database.session.add(new_upload)
@@ -121,7 +123,8 @@ def index():
             image_url = url_for('static', filename='uploads/' + file.filename)
             return render_template('result.html', 
                                    breed=predicted_breed, 
-                                   confidence=confidence, image=image_url, 
+                                   confidence=confidence, 
+                                   image=image_url, 
                                    breed_ranking = predicted_breed_ranking,
                                    description = breed_description)
     return render_template('index.html')
