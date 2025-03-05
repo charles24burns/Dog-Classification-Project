@@ -6,5 +6,5 @@ The current model is still under development, as I am looking at adding:
 - a better web design
 - a more accurate classification model
 
-### Current implementation metrics
+### Current Implementation Metrics
 ![screenshot](Figure_1.png)
