@@ -8,7 +8,9 @@
         <h1>Prediction Result</h1>
         <p>The predicted breed of the dog in the image is: <strong>{{ breed }}</strong></p>
         <img src="{{ image }}" alt="Dog Image", style="width: 300px; height: auto;">
-        <p>Confidence: <strong>{{ confidence }}</strong></p>
+        <p>Confidence: {{ confidence }}</p>
+        <p>{{ breed_ranking }}</p>
+        <p>{{ description }}</p>
         <p>Upload another image of your dog <a href="/">here</a>.</p>
     </body>
 </html>
